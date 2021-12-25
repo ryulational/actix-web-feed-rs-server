@@ -1,3 +1,6 @@
-fn main() {
-    println!("Hello, world!");
+use rss_server::run;
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    run()?.await
 }
