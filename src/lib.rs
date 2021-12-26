@@ -31,7 +31,7 @@ async fn feed_info(body: web::Json<PostBody>) -> Result<impl Responder> {
     let title_content = feed.title.expect("Could not get title");
     let title = title_content.content;
 
-    let description_content = feed.description.expect("Could not get updated");
+    let description_content = feed.description.expect("Could not get description");
     let description = description_content.content;
 
     let updated_content = feed.updated.expect("Could not get updated");
