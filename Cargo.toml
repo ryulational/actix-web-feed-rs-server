@@ -14,10 +14,13 @@ name = "rss_server"
 
 [dependencies]
 actix-web = "4.0.0-beta.15"
+feed-rs = "1.0.0"
+reqwest = "0.11.8"
+serde = "1.0.132"
+serde_json = "1.0.73"
 
 [features]
 
 [dev-dependencies]
 actix-rt = "2.5.0"
-reqwest = "0.11.8"
 tokio = "1.15.0"
