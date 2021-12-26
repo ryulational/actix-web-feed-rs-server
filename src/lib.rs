@@ -25,7 +25,7 @@ async fn get_feed(url: &String) -> Result<Feed> {
     Ok(parser::parse(&content[..]).expect("Could not parse feed"))
 }
 
-async fn feed_info(body: web::Json<PostBody>) -> Result<String> {
+async fn feed_info(body: web::Json<PostBody>) -> Result<impl Responder> {
     let feed = get_feed(&body.url).await.expect("Could not get feed");
 
     let title_content = feed.title.expect("Could not get title");
@@ -43,7 +43,7 @@ async fn feed_info(body: web::Json<PostBody>) -> Result<String> {
         "updated": updated.to_rfc3339()
     });
 
-    Ok(feed.to_string())
+    Ok(web::Json(feed))
 }
 
 pub fn run() -> std::io::Result<Server> {
