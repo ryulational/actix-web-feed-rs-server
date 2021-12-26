@@ -2,7 +2,7 @@ use actix_web::dev::Server;
 use actix_web::{web, App, HttpResponse, HttpServer, Responder, Result};
 use feed_rs::model::Feed;
 use feed_rs::parser;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 async fn health_check() -> impl Responder {
@@ -46,11 +46,38 @@ async fn feed_info(body: web::Json<PostBody>) -> Result<impl Responder> {
     Ok(web::Json(feed))
 }
 
+#[derive(Serialize)]
+struct EntryObj {
+    id: String,
+    title: String,
+    published: String,
+}
+
+async fn feed_entries(body: web::Json<PostBody>) -> Result<impl Responder> {
+    let feed = get_feed(&body.url).await.expect("Could not get feed");
+
+    let entries = feed.entries;
+
+    let mut data: Vec<EntryObj> = Vec::new();
+
+    for entry in entries {
+        data.push(EntryObj {
+            id: entry.id,
+            title: entry.title.unwrap().content,
+            published: entry.published.unwrap().to_rfc3339(),
+        });
+    }
+
+    let json = serde_json::to_string(&data)?;
+    Ok(web::Json(json))
+}
+
 pub fn run() -> std::io::Result<Server> {
     let server = HttpServer::new(|| {
         App::new()
             .route("/health_check", web::get().to(health_check))
             .route("/feed", web::post().to(feed_info))
+            .route("/entries", web::post().to(feed_entries))
     })
     .bind("127.0.0.1:8000")?
     .run();
