@@ -1,5 +1,6 @@
 use actix_web::dev::Server;
 use actix_web::{web, App, HttpResponse, HttpServer, Responder, Result};
+use feed_rs::model::Feed;
 use feed_rs::parser;
 use serde::Deserialize;
 use serde_json::json;
@@ -13,8 +14,7 @@ struct PostBody {
     url: String,
 }
 
-async fn feed_info(body: web::Json<PostBody>) -> Result<String> {
-    let url: &String = &body.url;
+async fn get_feed(url: &String) -> Result<Feed> {
     let content = reqwest::get(url)
         .await
         .expect("Could not get request")
@@ -22,7 +22,11 @@ async fn feed_info(body: web::Json<PostBody>) -> Result<String> {
         .await
         .expect("Could not get bytes");
 
-    let feed = parser::parse(&content[..]).expect("Could not parse");
+    Ok(parser::parse(&content[..]).expect("Could not parse feed"))
+}
+
+async fn feed_info(body: web::Json<PostBody>) -> Result<String> {
+    let feed = get_feed(&body.url).await.expect("Could not get feed");
 
     let title_content = feed.title.expect("Could not get title");
     let title = title_content.content;
