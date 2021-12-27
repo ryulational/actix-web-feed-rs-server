@@ -60,7 +60,5 @@ pub async fn feed_entries(body: web::Json<PostBody>) -> Result<impl Responder> {
             published: entry.published.unwrap().to_rfc3339(),
         });
     }
-
-    let json = serde_json::to_string(&data)?;
-    Ok(web::Json(json))
+    Ok(web::Json(data))
 }
