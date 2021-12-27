@@ -9,7 +9,7 @@ pub struct PostBody {
     url: String,
 }
 
-async fn get_feed(url: &String) -> Result<Feed> {
+async fn get_feed(url: &str) -> Result<Feed> {
     let content = reqwest::get(url)
         .await
         .expect("Could not get request")
