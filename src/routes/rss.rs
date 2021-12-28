@@ -32,24 +32,6 @@ pub async fn feed_info(body: web::Json<PostBody>) -> Result<impl Responder> {
     let updated_content = feed.updated.expect("Could not get updated");
     let updated = updated_content;
 
-    let feed = json!({
-        "title": title,
-        "description": description,
-        "updated": updated.to_rfc3339()
-    });
-
-    Ok(web::Json(feed))
-}
-
-#[derive(Serialize)]
-struct EntryObj {
-    id: String,
-    title: String,
-    published: String,
-}
-
-pub async fn feed_entries(body: web::Json<PostBody>) -> Result<impl Responder> {
-    let feed = get_feed(&body.url).await.expect("Could not get feed");
     let entries = feed.entries;
     let mut data: Vec<EntryObj> = Vec::new();
 
@@ -60,5 +42,20 @@ pub async fn feed_entries(body: web::Json<PostBody>) -> Result<impl Responder> {
             published: entry.published.unwrap().to_rfc3339(),
         });
     }
-    Ok(web::Json(data))
+
+    let feed = json!({
+        "title": title,
+        "description": description,
+        "updated": updated.to_rfc3339(),
+        "entries": data
+    });
+
+    Ok(web::Json(feed))
+}
+
+#[derive(Serialize)]
+struct EntryObj {
+    id: String,
+    title: String,
+    published: String,
 }
