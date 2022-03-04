@@ -29,8 +29,11 @@ pub async fn feed_info(body: web::Json<PostBody>) -> Result<impl Responder> {
     let description_content = feed.description.expect("Could not get description");
     let description = description_content.content;
 
-    let updated_content = feed.updated.expect("Could not get updated");
-    let updated = updated_content;
+    let updated_content = feed.updated;
+    let updated = match updated_content {
+        Some(content) => content.to_rfc3339(),
+        None => "".to_string(),
+    };
 
     let entries = feed.entries;
     let mut data: Vec<EntryObj> = Vec::new();
@@ -46,7 +49,7 @@ pub async fn feed_info(body: web::Json<PostBody>) -> Result<impl Responder> {
     let feed = json!({
         "title": title,
         "description": description,
-        "updated": updated.to_rfc3339(),
+        "updated": updated,
         "entries": data
     });
 
