@@ -21,6 +21,7 @@ async fn get_feed(url: &str) -> Result<Feed> {
 }
 
 pub async fn feed_info(body: web::Json<PostBody>) -> Result<impl Responder> {
+    log::info!("Getting RSS Feed of {}", &body.url);
     let feed = get_feed(&body.url).await.expect("Could not get feed");
 
     let title_content = feed.title.expect("Could not get title");
@@ -52,6 +53,8 @@ pub async fn feed_info(body: web::Json<PostBody>) -> Result<impl Responder> {
         "updated": updated,
         "entries": data
     });
+
+    log::info!("Found {} entries", data.len());
 
     Ok(web::Json(feed))
 }
