@@ -1,7 +1,7 @@
 use rss_server::startup::run;
 use std::net::TcpListener;
 
-#[actix_rt::test]
+#[tokio::test]
 async fn health_check_works() {
     let app = spawn_app().await;
     let client = reqwest::Client::new();
